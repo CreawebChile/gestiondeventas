@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SellStream - Sistema de Gestión de Suscripciones</title>
+    <meta name="description" content="SellStream - Sistema profesional para gestión y seguimiento de suscripciones y ventas recurrentes">
+    <meta name="author" content="SellStream">
+    <link rel="canonical" href="https://sellstream.trustzonestore.com">
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/site.webmanifest">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-light">
+    <!-- Splash Screen -->
+    <div id="splashScreen">
+        <img src="SellStream.png" alt="SellStream Logo" class="splash-logo">
+        <div class="splash-spinner"></div>
+        <p class="splash-text">Cargando...</p>
+    </div>
+    
+    <div id="app">
+        <!-- Auth Container -->
+        <div id="authContainer" class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-5">
+                    <div class="card auth-card">
+                        <div class="card-body p-4">
+                            <div class="text-center mb-4">
+                                <img src="SellStream.png" alt="SellStream Logo" class="img-fluid mb-3" style="max-width: 200px;">
+                                <h2 class="fw-bold">SellStream</h2>
+                            </div>
+                            <div class="auth-form-container">
+                                <!-- Login Form -->
+                                <form id="authForm" class="auth-form login-form">
+                                    <div class="mb-3">
+                                        <!-- Asegurarse de que el ID sea loginEmail -->
+                                        <input type="email" id="loginEmail" class="form-control" placeholder="Email" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <!-- Asegurarse de que el ID sea loginPassword -->
+                                        <input type="password" id="loginPassword" class="form-control" placeholder="Contraseña" required>
+                                        <div class="text-end mt-1">
+                                            <a href="#" class="forgot-password" id="forgotPasswordLink">¿Olvidaste tu contraseña?</a>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100 mb-3">Iniciar Sesión</button>
+                                    <p class="text-center mb-0">
+                                        ¿No tienes cuenta? 
+                                        <a class="auth-toggle" id="showRegisterForm">Regístrate aquí</a>
+                                    </p>
+                                </form>
+
+                                <!-- Register Form -->
+                                <form id="registerForm" class="auth-form register-form">
+                                    <div class="mb-3">
+                                        <input type="text" id="registerName" class="form-control" placeholder="Nombre completo" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="email" id="registerEmail" class="form-control" placeholder="Email" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="password" id="registerPassword" class="form-control" placeholder="Contraseña" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="password" id="registerPasswordConfirm" class="form-control" placeholder="Confirmar contraseña" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100 mb-3">Registrarse</button>
+                                    <p class="text-center mb-0">
+                                        ¿Ya tienes cuenta? 
+                                        <a class="auth-toggle" id="showLoginForm">Inicia sesión aquí</a>
+                                    </p>
+                                </form>
+
+                                <!-- Password Recovery Form -->
+                                <form id="recoveryForm" class="recovery-form">
+                                    <div class="mb-3">
+                                        <p class="text-muted">Ingresa tu email para recuperar tu contraseña</p>
+                                        <input type="email" id="recoveryEmail" class="form-control" placeholder="Email" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100 mb-3">Enviar enlace de recuperación</button>
+                                    <p class="text-center mb-0">
+                                        <a class="auth-toggle" id="backToLogin">Volver al inicio de sesión</a>
+                                    </p>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Container -->
+        <div id="dashboardContainer" style="display: none;">
+            <nav class="navbar navbar-dark mb-4">
+                <div class="container d-flex justify-content-between align-items-center">
+                    <span class="navbar-brand fw-bold">
+                        <img src="SellStream.png" alt="SellStream Logo" height="30" class="me-2">
+                        Panel de Control
+                    </span>
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-light me-3" data-bs-toggle="modal" data-bs-target="#trashModal">
+                            <i class="fas fa-trash me-2"></i>Papelera
+                            <span id="trashCount" class="badge bg-danger ms-1">0</span>
+                        </button>
+                        <div class="text-white me-4" id="currentTime">
+                            <i class="fas fa-clock me-2"></i>
+                        </div>
+                        <div class="text-white me-4" id="totalSales">
+                            <i class="fas fa-dollar-sign me-2"></i>Total: $0 CLP
+                        </div>
+                        <button id="logoutBtn" class="btn btn-light">
+                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container">
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-check-circle me-2"></i>Activas
+                                </h6>
+                                <h3 id="activeSubscriptions">0</h3>
+                                <small class="text-white-50">Menos del 50% transcurrido</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-clock me-2"></i>Por Vencer
+                                </h6>
+                                <h3 id="nearExpiration">0</h3>
+                                <small class="text-white-50">Más del 50% transcurrido</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-hourglass-end me-2"></i>Vence Hoy
+                                </h6>
+                                <h3 id="expiringToday">0</h3>
+                                <small class="text-white-50">Último día de servicio</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-danger text-white">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-times-circle me-2"></i>Vencidas
+                                </h6>
+                                <h3 id="expiredSubscriptions">0</h3>
+                                <small class="text-white-50">Requieren renovación</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="d-flex gap-2 align-items-center">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#saleModal">
+                                <i class="fas fa-plus me-2"></i>Nueva Suscripción
+                            </button>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-filter me-2"></i>Filtros
+                                </button>
+                                <ul class="dropdown-menu" id="filtersList">
+                                    <li><a class="dropdown-item" href="#" onclick="clearFilters()">Mostrar todo</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <!-- Los filtros personalizados se agregarán aquí -->
+                                </ul>
+                            </div>
+                            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="fas fa-plus me-2"></i>Crear Filtro
+                            </button>
+                            <div class="ms-auto">
+                                <select id="sortOrder" class="form-select" onchange="applySorting()">
+                                    <option value="newest">Más recientes primero</option>
+                                    <option value="oldest">Más antiguos primero</option>
+                                    <option value="nameAsc">Nombre (A-Z)</option>
+                                    <option value="nameDesc">Nombre (Z-A)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="salesList" class="row g-4"></div>
+            </div>
+
+            <!-- Sale Modal -->
+            <div class="modal fade" id="saleModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Nueva Suscripción</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="saleForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Producto/Servicio</label>
+                                    <input type="text" id="productName" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Cliente</label>
+                                    <input type="text" id="clientName" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Precio (CLP)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" id="price" class="form-control" required>
+                                        <span class="input-group-text">CLP</span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Duración</label>
+                                        <input type="number" id="duration" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Período</label>
+                                        <select id="periodType" class="form-select" required>
+                                            <option value="days">Días</option>
+                                            <option value="months">Meses</option>
+                                            <option value="years">Años</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fecha de Inicio</label>
+                                        <input type="datetime-local" id="startDate" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Estado Inicial</label>
+                                        <select id="saleStatus" class="form-select">
+                                            <option value="active">Activa</option>
+                                            <option value="completed">Completada</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">WhatsApp</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">+56</span>
+                                            <input type="tel" id="whatsapp" class="form-control" pattern="[0-9]{9}" placeholder="912345678">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" id="email" class="form-control" placeholder="cliente@email.com">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Instagram</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">@</span>
+                                            <input type="text" id="instagram" class="form-control" placeholder="usuario">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Facebook</label>
+                                        <input type="text" id="facebook" class="form-control" placeholder="URL o usuario">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Notas (opcional)</label>
+                                    <textarea id="notes" class="form-control" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Datos de la Cuenta</label>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                <input type="text" id="accountUser" class="form-control" placeholder="Usuario/Email">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                                <input type="text" id="accountPassword" class="form-control" placeholder="Contraseña">
+                                                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('accountPassword')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-user-circle"></i></span>
+                                                <input type="text" id="accountProfile" class="form-control" placeholder="Perfil (opcional)">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                                <input type="text" id="profilePin" class="form-control" placeholder="PIN (opcional)">
+                                                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('profilePin')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Guardar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Modal -->
+            <div class="modal fade" id="editModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Editar Suscripción</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editForm">
+                                <input type="hidden" id="editSaleId">
+                                <div class="mb-3">
+                                    <label class="form-label">Producto/Servicio</label>
+                                    <input type="text" id="editProductName" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Cliente</label>
+                                    <input type="text" id="editClientName" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Precio (CLP)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" id="editPrice" class="form-control" required>
+                                        <span class="input-group-text">CLP</span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">WhatsApp</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">+56</span>
+                                            <input type="tel" id="editWhatsapp" class="form-control" pattern="[0-9]{9}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" id="editEmail" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Instagram</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">@</span>
+                                            <input type="text" id="editInstagram" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Facebook</label>
+                                        <input type="text" id="editFacebook" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Notas</label>
+                                    <textarea id="editNotes" class="form-control" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Datos de la Cuenta</label>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                <input type="text" id="editAccountUser" class="form-control" placeholder="Usuario/Email">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                                <input type="text" id="editAccountPassword" class="form-control" placeholder="Contraseña">
+                                                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('editAccountPassword')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-user-circle"></i></span>
+                                                <input type="text" id="editAccountProfile" class="form-control" placeholder="Perfil (opcional)">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                                <input type="text" id="editProfilePin" class="form-control" placeholder="PIN (opcional)">
+                                                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('editProfilePin')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Guardar Cambios</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Renewal Modal -->
+            <div class="modal fade" id="renewModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Renovar Suscripción</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="remainingDaysInfo" class="alert alert-info" role="alert">
+                                Días restantes: <span id="remainingDays">0</span>
+                            </div>
+                            <form id="renewForm">
+                                <input type="hidden" id="renewSaleId">
+                                <input type="hidden" id="renewCurrentSale">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Duración</label>
+                                        <input type="number" id="renewDuration" class="form-control" required min="1">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Período</label>
+                                        <select id="renewPeriodType" class="form-select" required>
+                                            <option value="days">Días</option>
+                                            <option value="months">Meses</option>
+                                            <option value="years">Años</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Nuevo Precio (CLP)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" id="renewPrice" class="form-control" required min="0">
+                                        <span class="input-group-text">CLP</span>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-sync me-2"></i>Renovar Suscripción
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Trash Modal before closing body -->
+    <div class="modal fade" id="trashModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-trash me-2"></i>Papelera
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="trashList" class="list-group mb-3">
+                        <!-- Trash items will be loaded here -->
+                    </div>
+                    <div class="text-end">
+                        <button id="emptyTrashBtn" class="btn btn-danger" onclick="emptyTrash()">
+                            <i class="fas fa-trash-alt me-2"></i>Vaciar Papelera
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agregar modal de filtros -->
+    <div class="modal fade" id="filterModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Crear Filtro Personalizado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="filterForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre del Filtro</label>
+                            <input type="text" id="filterName" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Palabras clave (separadas por coma)</label>
+                            <input type="text" id="filterKeywords" class="form-control" placeholder="netflix, spotify, amazon">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Guardar Filtro</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js';
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzKjNf4uCGSq25seHWXdSjIAfDO5aYI_s",
+            authDomain: "tiempoventas-fd1eb.firebaseapp.com",
+            projectId: "tiempoventas-fd1eb",
+            storageBucket: "tiempoventas-fd1eb.firebasestorage.app",
+            messagingSenderId: "1052194374963",
+            appId: "1:1052194374963:web:54931d74c1889cb2002a46"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        window.firebaseApp = app;
+    </script>
+    <script type="module" src="app.js"></script>
+    <script>
+        function updateCurrentTime() {
+            const now = new Date().toLocaleString('es-CL', { 
+                timeZone: 'America/Santiago',
+                dateStyle: 'medium',
+                timeStyle: 'medium'
+            });
+            document.getElementById('currentTime').innerHTML = `
+                <i class="fas fa-clock me-2"></i>${now}
+            `;
+        }
+        
+        setInterval(updateCurrentTime, 1000);
+        updateCurrentTime();
+
+        // Set max date to current chile datetime
+        function updateMaxDate() {
+            const now = new Date();
+            const chileDatetime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Santiago' }));
+            const year = chileDatetime.getFullYear();
+            const month = String(chileDatetime.getMonth() + 1).padStart(2, '0');
+            const day = String(chileDatetime.getDate()).padStart(2, '0');
+            const hours = String(chileDatetime.getHours()).padStart(2, '0');
+            const minutes = String(chileDatetime.getMinutes()).padStart(2, '0');
+            
+            const maxDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+            document.getElementById('startDate').max = maxDateTime;
+            document.getElementById('startDate').value = maxDateTime;
+        }
+
+        document.getElementById('saleModal').addEventListener('show.bs.modal', updateMaxDate);
+
+        window.togglePassword = function(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = event.currentTarget.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        };
+    </script>
+</body>
+</html>
