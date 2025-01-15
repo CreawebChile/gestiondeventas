@@ -760,8 +760,9 @@
 
 /* Forum Styles */
 .posts-container {
-    max-height: calc(100vh - 250px);
-    overflow-y: auto;
+    min-height: 200px;
+    height: auto;
+    overflow-y: visible;
 }
 
 .post-card {
@@ -967,19 +968,20 @@ optgroup option {
 /* Forum Layout Styles */
 .sticky-sidebar {
     position: relative;
-    height: calc(100vh - 100px);
+    height: auto;
 }
 
 .sticky-sidebar .sticky-top {
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
+    position: relative;
+    height: auto;
+    overflow-y: visible;
 }
 
 .posts-container {
+    position: relative;
     min-height: 200px;
-    max-height: calc(100vh - 300px);
-    overflow-y: auto;
-    scrollbar-width: thin;
+    height: auto;
+    overflow-y: visible;
 }
 
 /* Mobile Optimizations */
@@ -1167,10 +1169,10 @@ optgroup option {
 /* Floating New Post Button Styles */
 .new-post-fab {
     position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 56px;
-    height: 56px;
+    bottom: 5rem; /* Aumentar la distancia desde abajo para no interferir con la paginación */
+    right: 1rem;
+    width: 50px; /* Reducir ligeramente el tamaño */
+    height: 50px;
     border-radius: 50%;
     background: var(--primary-color);
     color: white;
@@ -1178,7 +1180,7 @@ optgroup option {
     display: none; /* Hidden by default, shown in mobile */
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.2rem; /* Reducir tamaño del ícono */
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 1000;
@@ -1241,6 +1243,16 @@ optgroup option {
 
     .modal-new-post .modal-content {
         border-radius: 1rem;
+    }
+
+    nav[aria-label="Forum pagination"] {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    /* Ajustar el contenedor principal para dejar espacio al botón */
+    .card-body {
+        padding-bottom: 6rem;
     }
 }
 
@@ -1367,4 +1379,58 @@ optgroup option {
     50% { transform: scale(1.1); }
     70% { transform: scale(0.9); }
     100% { transform: scale(1); opacity: 1; }
+}
+
+/* Contenedor principal de posts */
+.scrollable-posts {
+    position: relative;
+    padding-right: 10px;
+}
+
+/* Filtros fijos */
+.sticky-filters {
+    position: relative;
+    background: white;
+    padding: 10px 0;
+    z-index: 100;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+}
+
+/* Ajustar el contenedor de posts */
+.posts-container {
+    position: relative;
+}
+
+/* Ajustar scroll personalizado */
+.scrollable-posts::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-posts::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.scrollable-posts::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.scrollable-posts::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Asegurar que el contenido no se superponga */
+.card-body {
+    position: relative;
+}
+
+/* Ajustar la navegación de paginación */
+nav[aria-label="Forum pagination"] {
+    position: relative;
+    background: white;
+    padding: 10px 0;
+    border-top: 1px solid #eee;
+    margin-top: 15px;
 }

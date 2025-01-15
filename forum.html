@@ -132,9 +132,9 @@
 
             <!-- Main content -->
             <div class="col-lg-8 col-xl-9">
-                <!-- Tabs container -->
                 <div class="card mb-4">
                     <div class="card-body">
+                        <!-- Tabs container -->
                         <ul class="nav nav-pills mb-4">
                             <li class="nav-item">
                                 <a class="nav-link active" id="allPosts-tab" data-bs-toggle="pill" href="#allPosts">
@@ -151,46 +151,43 @@
                         <div class="tab-content">
                             <!-- All posts tab -->
                             <div class="tab-pane fade show active" id="allPosts">
-                                <!-- Search and filters -->
-                                <div class="d-flex flex-wrap gap-2 mb-3">
-                                    <select class="form-select" id="categoryFilter">
-                                        <option value="">Todas las categorías</option>
-                                        <optgroup label="Venta de Cuentas">
-                                            <option value="streaming">Cuentas de Streaming</option>
-                                            <option value="ofertas">Cuentas Baratas/Promocionales</option>
-                                            <option value="premium">Cuentas Premium</option>
-                                        </optgroup>
-                                        <optgroup label="Proveedores de Cuentas">
-                                            <option value="proveedor-streaming">Proveedores de Cuentas Streaming</option>
-                                            <option value="mayorista">Vendo Cuentas al por Mayor</option>
-                                            <option value="empresas">Cuentas para Empresas o Revendedores</option>
-                                        </optgroup>
-                                        <optgroup label="Búsqueda de Cuentas">
-                                            <option value="busco-streaming">Busco Cuentas de Streaming</option>
-                                            <option value="busco-ofertas">Solicito Cuentas Baratas o Promociones</option>
-                                        </optgroup>
-                                    </select>
-                                    <select class="form-select" id="sortPosts">
-                                        <option value="newest">Más recientes</option>
-                                        <option value="oldest">Más antiguos</option>
-                                    </select>
+                                <!-- Eliminar la clase sticky-filters -->
+                                <div class="filters-container">
+                                    <div class="d-flex flex-wrap gap-2 mb-3">
+                                        <select class="form-select" id="categoryFilter">
+                                            <option value="">Todas las categorías</option>
+                                            <optgroup label="Venta de Cuentas">
+                                                <option value="streaming">Cuentas de Streaming</option>
+                                                <option value="ofertas">Cuentas Baratas/Promocionales</option>
+                                                <option value="premium">Cuentas Premium</option>
+                                            </optgroup>
+                                            <optgroup label="Proveedores de Cuentas">
+                                                <option value="proveedor-streaming">Proveedores de Cuentas Streaming</option>
+                                                <option value="mayorista">Vendo Cuentas al por Mayor</option>
+                                                <option value="empresas">Cuentas para Empresas o Revendedores</option>
+                                            </optgroup>
+                                            <optgroup label="Búsqueda de Cuentas">
+                                                <option value="busco-streaming">Busco Cuentas de Streaming</option>
+                                                <option value="busco-ofertas">Solicito Cuentas Baratas o Promociones</option>
+                                            </optgroup>
+                                        </select>
+                                        <select class="form-select" id="sortPosts">
+                                            <option value="newest">Más recientes</option>
+                                            <option value="oldest">Más antiguos</option>
+                                        </select>
+                                    </div>
                                 </div>
 
-                                <!-- Posts container -->
+                                <!-- Eliminar el contenedor scrollable-posts -->
                                 <div class="posts-container mb-4">
                                     <!-- Posts will be loaded here -->
                                 </div>
 
-                                <!-- Reemplazar la sección de paginación existente con esta versión simplificada -->
+                                <!-- Pagination -->
                                 <nav aria-label="Forum pagination" class="d-flex justify-content-between align-items-center">
-                                    <span class="text-muted small" id="totalPosts">
-                                        <!-- El contador se actualizará dinámicamente -->
-                                    </span>
-                                    <ul class="pagination pagination-sm mb-0">
-                                        <!-- La paginación se generará dinámicamente -->
-                                    </ul>
+                                    <span class="text-muted small" id="totalPosts"></span>
+                                    <ul class="pagination pagination-sm mb-0"></ul>
                                 </nav>
-
                             </div>
 
                             <!-- History tab -->

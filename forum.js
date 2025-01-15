@@ -33,6 +33,7 @@ onAuthStateChanged(auth, (user) => {
 
 // Eliminar el event listener de búsqueda y simplificar la función loadPosts
 async function loadPosts() {
+    const scrollPosition = window.pageYOffset;
     const postsContainer = document.querySelector('.posts-container');
     const postsQuery = query(collection(db, 'forum_posts'), orderBy('createdAt', 'desc'));
 
@@ -92,6 +93,11 @@ async function loadPosts() {
         // Actualizar historial
         updateUserHistory(allPosts);
     });
+
+    // Restaurar la posición del scroll si es necesario
+    if (scrollPosition > 0) {
+        window.scrollTo(0, scrollPosition);
+    }
 }
 
 // Add pagination functions
@@ -167,13 +173,22 @@ window.changePage = function(page) {
     if (page < 1 || page > paginationState.totalPages) return;
     
     paginationState.currentPage = page;
-    loadPosts();
     
-    // Scroll al inicio de los posts
-    document.querySelector('.posts-container').scrollTo({
-        top: 0,
-        behavior: 'smooth'
+    // Scroll suave al inicio de la sección de posts antes de cargar nuevos posts
+    const postsSection = document.querySelector('.posts-container');
+    const headerOffset = 100; // Ajusta este valor según tu layout
+    const sectionPosition = postsSection.getBoundingClientRect().top;
+    const offsetPosition = sectionPosition + window.pageYOffset - headerOffset;
+
+    window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
     });
+
+    // Cargar los posts después de un pequeño delay para permitir el scroll
+    setTimeout(() => {
+        loadPosts();
+    }, 100);
 };
 
 // Add search functionality
@@ -701,22 +716,17 @@ async function handleNewPost(e, isMobile = false) {
 
         // Verificar cada elemento individualmente y mostrar mensajes específicos
         if (!categoryElement) {
-            console.error('Elemento no encontrado:', `${prefix}PostCategory`);
-            throw new Error('Campo de categoría no encontrado. ID: ' + `${prefix}PostCategory`);
+            console.error('Elemento no encontrado:', 'PostCategory');
+            throw new Error('Campo de categoría no encontrado');
         }
         if (!titleElement) {
-            console.error('Elemento no encontrado:', `${prefix}PostTitle`);
+            console.error('Elemento no encontrado:', 'PostTitle');
             throw new Error('Campo de título no encontrado');
         }
         if (!contentElement) {
-            console.error('Elemento no encontrado:', `${prefix}PostContent`);
+            console.error('Elemento no encontrado:', 'PostContent');
             throw new Error('Campo de contenido no encontrado');
         }
-
-        // Validar valores
-        if (!categoryElement.value) throw new Error('Por favor seleccione una categoría');
-        if (!titleElement.value.trim()) throw new Error('Por favor ingrese un título');
-        if (!contentElement.value.trim()) throw new Error('Por favor ingrese el contenido de la publicación');
 
         const formData = {
             category: categoryElement.value,
@@ -732,10 +742,10 @@ async function handleNewPost(e, isMobile = false) {
         // Si se permite el contacto, agregar la información
         if (formData.allowContact) {
             formData.contact = {
-                whatsapp: document.getElementById(`${prefix}ContactWhatsapp`)?.value || null,
-                telegram: document.getElementById(`${prefix}ContactTelegram`)?.value || null,
-                instagram: document.getElementById(`${prefix}ContactInstagram`)?.value || null,
-                facebook: document.getElementById(`${prefix}ContactFacebook`)?.value || null
+                whatsapp: document.getElementById('contactWhatsapp')?.value || null,
+                telegram: document.getElementById('contactTelegram')?.value || null,
+                instagram: document.getElementById('contactInstagram')?.value || null,
+                facebook: document.getElementById('contactFacebook')?.value || null
             };
         }
 
