@@ -131,6 +131,9 @@
                             <i class="fas fa-dollar-sign me-2"></i>Total: $0 CLP
                         </div>
                     </div>
+                    <span id="verificationBadge" class="badge bg-warning">
+                        <i class="fas fa-exclamation-circle"></i> Cuenta sin verificar
+                    </span>
                 </div>
             </nav>
 
@@ -580,6 +583,45 @@
             </div>
         </div>
     </div>
+
+    <!-- Buscar el modal de verificación existente y reemplazarlo con este: -->
+
+    <div class="modal fade" id="verificationModal" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-shield-alt me-2"></i>Verificar Cuenta
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-key fa-3x text-primary mb-3 verification-icon"></i>
+                        <h4>Verificación de Cuenta</h4>
+                        <p class="text-muted">
+                            Ingresa el código de verificación para acceder a todas las funcionalidades.
+                        </p>
+                    </div>
+                    <form id="verificationForm">
+                        <div class="mb-3">
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="verificationCode" 
+                                   placeholder="Ingresa el código"
+                                   maxlength="12"
+                                   autocomplete="off"
+                                   required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-check-circle me-2"></i>Verificar Cuenta
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ...resto del código existente... -->
 
     <!-- Firebase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

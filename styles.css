@@ -1260,3 +1260,111 @@ optgroup option {
     margin-left: 1rem;
     padding-left: 1rem;
 }
+
+/* Verification Styles */
+.requires-verification {
+    position: relative;
+}
+
+.requires-verification.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.requires-verification.disabled::after {
+    content: "Requiere verificación";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.requires-verification.disabled:hover::after {
+    opacity: 1;
+}
+
+#verificationBadge {
+    transition: all 0.3s ease;
+}
+
+#verificationModal .fa-key {
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-20px);
+    }
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Verified Post Styles */
+.verified-post {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.1);
+}
+
+.verified-post .card-body {
+    background-color: rgba(74, 144, 226, 0.02);
+}
+
+.verified-reply {
+    border-left: 3px solid var(--primary-color);
+    background-color: rgba(74, 144, 226, 0.02);
+}
+
+.badge.bg-primary {
+    font-size: 0.75rem;
+    padding: 0.25em 0.6em;
+}
+
+.badge.bg-primary i {
+    font-size: 0.8em;
+}
+
+/* Verification Badge Styles */
+#verificationBadge {
+    transition: all 0.3s ease;
+}
+
+#verificationBadge.cursor-pointer {
+    cursor: pointer;
+}
+
+#verificationBadge.cursor-pointer:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#verificationCode {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+/* Verification Modal Animation */
+.verification-icon {
+    animation: bounceIn 1s ease;
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.1); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+}

@@ -1,5 +1,5 @@
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js';
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc, query, where } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc, query, where, setDoc } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js';
 
 const app = window.firebaseApp;
 const auth = getAuth(app);
@@ -1250,6 +1250,25 @@ window.applySorting = function() {
 // Modificar el observer de autenticación
 auth.onAuthStateChanged(async (user) => {
     try {
+        // Verificar el estado de verificación del usuario
+        if (user) {
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            const userData = userDoc.data();
+            
+            // Actualizar el badge de verificación
+            const verificationBadge = document.getElementById('verificationBadge');
+            if (userData?.isVerified) {
+                verificationBadge.className = 'badge bg-success';
+                verificationBadge.innerHTML = '<i class="fas fa-check-circle"></i> Cuenta verificada';
+            } else {
+                verificationBadge.className = 'badge bg-warning cursor-pointer';
+                verificationBadge.innerHTML = '<i class="fas fa-exclamation-circle"></i> Cuenta sin verificar';
+                verificationBadge.onclick = () => {
+                    new bootstrap.Modal(document.getElementById('verificationModal')).show();
+                };
+            }
+        }
+
         // Limpiar datos anteriores
         currentSales = [];
         currentFilter = null;
@@ -1290,6 +1309,43 @@ auth.onAuthStateChanged(async (user) => {
         setTimeout(() => {
             splashScreen.style.display = 'none';
         }, 300);
+    }
+});
+
+// Agregar el manejador del formulario de verificación
+document.getElementById('verificationForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const code = document.getElementById('verificationCode').value.trim();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    
+    try {
+        showLoading(submitBtn);
+        
+        if (code !== 'SELLSTREAM20') {
+            throw new Error('Código de verificación incorrecto');
+        }
+
+        // Si el código es correcto, actualizar el estado de verificación
+        await setDoc(doc(db, 'users', auth.currentUser.uid), {
+            isVerified: true,
+            verifiedAt: new Date().toISOString()
+        }, { merge: true });
+
+        // Actualizar UI
+        const verificationBadge = document.getElementById('verificationBadge');
+        verificationBadge.className = 'badge bg-success';
+        verificationBadge.innerHTML = '<i class="fas fa-check-circle"></i> Cuenta verificada';
+        verificationBadge.onclick = null;
+
+        // Cerrar el modal y mostrar mensaje de éxito
+        bootstrap.Modal.getInstance(document.getElementById('verificationModal')).hide();
+        showSuccess('¡Cuenta verificada exitosamente!');
+        
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        hideLoading(submitBtn);
     }
 });
 

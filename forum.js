@@ -1,5 +1,5 @@
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js';
-import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, updateDoc, arrayUnion, getDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, updateDoc, arrayUnion, getDoc, deleteDoc, getDocs } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js';
 
 const auth = getAuth();
 const db = getFirestore();
@@ -32,33 +32,45 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // Eliminar el event listener de búsqueda y simplificar la función loadPosts
-function loadPosts() {
+async function loadPosts() {
     const postsContainer = document.querySelector('.posts-container');
     const postsQuery = query(collection(db, 'forum_posts'), orderBy('createdAt', 'desc'));
 
-    onSnapshot(postsQuery, (snapshot) => {
+    onSnapshot(postsQuery, async (snapshot) => {
         const allPosts = [];
-        snapshot.forEach((doc) => {
-            allPosts.push({ id: doc.id, ...doc.data() });
+        
+        // Obtener información de usuarios verificados
+        const verifiedUsers = new Set();
+        const usersQuery = query(collection(db, 'users'));
+        const usersSnapshot = await getDocs(usersQuery);
+        usersSnapshot.forEach(doc => {
+            if (doc.data().isVerified) {
+                verifiedUsers.add(doc.id);
+            }
         });
 
-        // Aplicar filtros
-        let filteredPosts = [...allPosts];
+        snapshot.forEach((doc) => {
+            const post = { id: doc.id, ...doc.data() };
+            // Agregar flag de verificado
+            post.isVerified = verifiedUsers.has(post.authorId);
+            allPosts.push(post);
+        });
 
-        // Filtrar por categoría si hay una seleccionada
+        // Ordenar posts: verificados primero, luego por fecha
+        let filteredPosts = [...allPosts];
+        
+        // Aplicar filtros de categoría si hay seleccionada
         const selectedCategory = document.getElementById('categoryFilter').value;
         if (selectedCategory) {
             filteredPosts = filteredPosts.filter(post => post.category === selectedCategory);
         }
 
-        // Ordenar posts
-        const sortOrder = document.getElementById('sortPosts').value;
+        // Ordenar dando prioridad a usuarios verificados
         filteredPosts.sort((a, b) => {
-            if (sortOrder === 'newest') {
-                return new Date(b.createdAt) - new Date(a.createdAt);
-            } else {
-                return new Date(a.createdAt) - new Date(b.createdAt);
-            }
+            if (a.isVerified && !b.isVerified) return -1;
+            if (!a.isVerified && b.isVerified) return 1;
+            // Si ambos tienen el mismo estado de verificación, ordenar por fecha
+            return new Date(b.createdAt) - new Date(a.createdAt);
         });
 
         // Actualizar paginación
@@ -200,9 +212,11 @@ function createPostHTML(post) {
     const categoryClass = `category-badge ${post.category}`;
     const contactButtons = createContactButtons(post);
     const categoryName = getCategoryInfo(post.category);
+    const verifiedBadge = post.isVerified ? 
+        '<span class="badge bg-primary ms-2"><i class="fas fa-check-circle me-1"></i>Verificado</span>' : '';
     
     return `
-        <div class="post-card card mb-4" data-category="${post.category}" data-post-id="${post.id}">
+        <div class="post-card card mb-4 ${post.isVerified ? 'verified-post' : ''}" data-category="${post.category}" data-post-id="${post.id}">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
@@ -211,6 +225,7 @@ function createPostHTML(post) {
                             <span class="${categoryClass}">${categoryName}</span>
                             <small class="text-muted">
                                 <i class="fas fa-user me-1"></i>${post.authorName || 'Usuario'}
+                                ${verifiedBadge}
                             </small>
                             <small class="text-muted">
                                 <i class="fas fa-clock me-1"></i>${formatDate(post.createdAt)}
@@ -395,13 +410,17 @@ function createContactButtons(post) {
 
 // Agregar función para crear HTML de respuestas
 function createReplyHTML(reply) {
+    const verifiedBadge = reply.isVerified ? 
+        '<span class="badge bg-primary ms-2"><i class="fas fa-check-circle me-1"></i>Verificado</span>' : '';
+    
     return `
-        <div class="reply-item">
+        <div class="reply-item ${reply.isVerified ? 'verified-reply' : ''}">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <p class="mb-1">${formatPostContent(reply.content)}</p>
                     <small class="text-muted">
-                        <i class="fas fa-user me-1"></i>${reply.authorName || 'Usuario'} - 
+                        <i class="fas fa-user me-1"></i>${reply.authorName || 'Usuario'}
+                        ${verifiedBadge}
                         <i class="fas fa-clock me-1"></i>${formatDate(reply.createdAt)}
                     </small>
                 </div>
