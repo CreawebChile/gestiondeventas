@@ -281,7 +281,7 @@ function createPostHTML(post) {
                 </div>
                 
                 <div class="reply-section mt-3" style="display: none;" id="replies-${post.id}">
-                    ${replies.map(reply => createReplyHTML(reply)).join('')}
+                    ${replies.map(reply => createReplyHTML(reply, post.id)).join('')}
                 </div>
             </div>
         </div>
@@ -424,12 +424,12 @@ function createContactButtons(post) {
 }
 
 // Agregar función para crear HTML de respuestas
-function createReplyHTML(reply) {
+function createReplyHTML(reply, postId) {
     const verifiedBadge = reply.isVerified ? 
         '<span class="badge bg-primary ms-2"><i class="fas fa-check-circle me-1"></i>Verificado</span>' : '';
     
     return `
-        <div class="reply-item ${reply.isVerified ? 'verified-reply' : ''}">
+        <div class="reply-item ${reply.isVerified ? 'verified-reply' : ''}" data-reply-id="${reply.createdAt}">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <p class="mb-1">${formatPostContent(reply.content)}</p>
@@ -441,7 +441,7 @@ function createReplyHTML(reply) {
                 </div>
                 ${reply.authorId === currentUser.uid ? `
                     <button class="btn btn-sm btn-link text-danger" 
-                            onclick="deleteReply('${reply.id}')">
+                            onclick="deleteReply('${postId}', '${reply.createdAt}')">
                         <i class="fas fa-times"></i>
                     </button>
                 ` : ''}
@@ -449,6 +449,32 @@ function createReplyHTML(reply) {
         </div>
     `;
 }
+
+// Agregar función para eliminar respuestas
+window.deleteReply = async (postId, replyTimestamp) => {
+    if (!confirm('¿Estás seguro de eliminar este comentario?')) return;
+    
+    try {
+        const postRef = doc(db, 'forum_posts', postId);
+        const postDoc = await getDoc(postRef);
+        
+        if (postDoc.exists()) {
+            const post = postDoc.data();
+            const updatedReplies = post.replies.filter(reply => 
+                reply.createdAt !== replyTimestamp || reply.authorId !== currentUser.uid
+            );
+            
+            await updateDoc(postRef, {
+                replies: updatedReplies
+            });
+            
+            showSuccess('Comentario eliminado exitosamente');
+        }
+    } catch (error) {
+        console.error('Error al eliminar el comentario:', error);
+        showError('Error al eliminar el comentario');
+    }
+};
 
 // Agregar función para eliminar posts
 window.deletePost = async (postId) => {
