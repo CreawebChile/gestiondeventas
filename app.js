@@ -356,18 +356,17 @@ document.getElementById('saleForm').addEventListener('submit', async (e) => {
 // Update calculateDaysRemaining function for more accurate calculations
 function calculateDaysRemaining(startDate, endDate) {
     try {
-        // Crear objetos Date desde las cadenas ISO
-        const now = new Date(getChileDateTime());
+        const now = new Date();
         const end = new Date(endDate);
         
-        // Verificar si las fechas son válidas
-        if (isNaN(end.getTime())) {
-            console.error('Fecha de finalización inválida:', endDate);
-            return 0;
-        }
-
-        const diffTime = end - now;
+        // Asegurarse de trabajar con fechas UTC para evitar problemas de zona horaria
+        const nowUTC = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+        const endUTC = Date.UTC(end.getFullYear(), end.getMonth(), end.getDate());
+        
+        // Calcular la diferencia en días
+        const diffTime = endUTC - nowUTC;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
         return diffDays;
     } catch (error) {
         console.error('Error calculando días restantes:', error);
@@ -571,7 +570,8 @@ function renderSales(sales) {
         salesList.innerHTML += `
             <div class="col-md-4 col-sm-6">
                 <div class="sale-card ${sale.status === 'completed' ? 'completed-sale' : ''}"
-                     data-status="${status.isExpired ? 'expired' : status.isNearExpiry ? 'near-expiry' : 'active'}">
+                     data-status="${status.isExpired ? 'expired' : status.isNearExpiry ? 'near-expiry' : 'active'}"
+                     data-sale-id="${sale.id}">
                     <div class="card-body">
                         ${progressBar}
                         <div class="d-flex justify-content-between align-items-start mb-3">
@@ -624,6 +624,7 @@ function renderSales(sales) {
     });
     
     updateDashboardStats(stats);
+    startAutoUpdates(sales);
 }
 
 // Add function to handle filters
@@ -1249,6 +1250,9 @@ window.applySorting = function() {
 
 // Modificar el observer de autenticación
 auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+        clearAutoUpdates();
+    }
     try {
         // Verificar el estado de verificación del usuario
         if (user) {
@@ -1501,3 +1505,91 @@ document.getElementById('forumButton').addEventListener('click', () => {
 });
 
 // Eliminar el código del modal de tutoriales que ya no se usará
+
+// Agregar función para actualizar una suscripción específica
+async function updateSaleStatus(saleId) {
+    try {
+        const saleRef = doc(db, 'sales', saleId);
+        const saleDoc = await getDoc(saleRef);
+        
+        if (!saleDoc.exists()) return;
+        
+        const sale = saleDoc.data();
+        const daysRemaining = calculateDaysRemaining(sale.startDate, sale.endDate);
+        const statusInfo = getStatusInfo(daysRemaining, sale.status, sale);
+        
+        // Encontrar el elemento de la suscripción en el DOM
+        const saleCard = document.querySelector(`[data-sale-id="${saleId}"]`);
+        if (saleCard) {
+            // Actualizar el badge de días restantes
+            const daysRemainingBadge = saleCard.querySelector('.days-remaining');
+            if (daysRemainingBadge) {
+                daysRemainingBadge.textContent = statusInfo.text;
+                daysRemainingBadge.className = `days-remaining ${statusInfo.class}`;
+            }
+            
+            // Actualizar la barra de progreso
+            const progressBar = saleCard.querySelector('.progress-bar');
+            if (progressBar) {
+                progressBar.style.width = `${statusInfo.elapsedPercentage}%`;
+                progressBar.className = `progress-bar ${statusInfo.class}`;
+            }
+            
+            // Actualizar el estado visual de la tarjeta
+            saleCard.dataset.status = statusInfo.isExpired ? 'expired' : 
+                                    statusInfo.isNearExpiry ? 'near-expiry' : 'active';
+        }
+        
+        // Si la suscripción ha vencido y estaba activa, actualizarla en la base de datos
+        if (daysRemaining < 0 && sale.status === 'active') {
+            await updateDoc(saleRef, {
+                status: 'expired',
+                updatedAt: getChileDateTime()
+            });
+        }
+    } catch (error) {
+        console.error('Error actualizando estado de suscripción:', error);
+    }
+}
+
+// Agregar sistema de actualización automática
+let updateIntervals = new Map();
+
+function startAutoUpdates(sales) {
+    // Limpiar intervalos anteriores
+    clearAutoUpdates();
+    
+    // Crear nuevos intervalos para cada suscripción activa
+    sales.forEach(sale => {
+        if (sale.status !== 'completed') {
+            // Actualizar cada minuto
+            const intervalId = setInterval(() => updateSaleStatus(sale.id), 60000);
+            updateIntervals.set(sale.id, intervalId);
+        }
+    });
+}
+
+function clearAutoUpdates() {
+    updateIntervals.forEach(intervalId => clearInterval(intervalId));
+    updateIntervals.clear();
+}
+
+// Actualizar las estadísticas inmediatamente después de cada cambio
+function updateStats() {
+    const sales = document.querySelectorAll('.sale-card');
+    let stats = { active: 0, nearExpiry: 0, expiringToday: 0, expired: 0, totalAmount: 0 };
+    
+    sales.forEach(sale => {
+        const status = sale.dataset.status;
+        const price = parseInt(sale.dataset.price || 0);
+        
+        if (status === 'expired') stats.expired++;
+        else if (status === 'near-expiry') stats.nearExpiry++;
+        else if (sale.querySelector('.days-remaining').textContent.includes('hoy')) stats.expiringToday++;
+        else stats.active++;
+        
+        stats.totalAmount += price;
+    });
+    
+    updateDashboardStats(stats);
+}
