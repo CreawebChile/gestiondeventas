@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SellStream - Foro</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/site.webmanifest">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark mb-4">
+        <div class="container">
+            <span class="navbar-brand fw-bold">
+                <img src="SellStream.png" alt="SellStream Logo" height="30" class="me-2">
+                Foro
+            </span>
+            <a href="index.html" class="btn btn-light">
+                <i class="fas fa-arrow-left me-2"></i>Volver al Panel
+            </a>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar para escribir posts -->
+            <div class="col-lg-4 col-xl-3 sticky-sidebar">
+                <div class="card mb-4 sticky-top" style="top: 1rem;">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Nueva Publicación</h5>
+                        <button class="btn btn-sm btn-link d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#newPostForm">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div class="card-body collapse d-lg-block" id="newPostForm">
+                        <form id="newPostForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Categoría</label>
+                                    <select class="form-select" id="PostCategory" required>
+                                        <option value="">Seleccionar categoría</option>
+                                        <optgroup label="Venta de Cuentas">
+                                            <option value="streaming">Cuentas de Streaming</option>
+                                            <option value="ofertas">Cuentas Baratas/Promocionales</option>
+                                            <option value="premium">Cuentas Premium</option>
+                                        </optgroup>
+                                        <optgroup label="Proveedores de Cuentas">
+                                            <option value="proveedor-streaming">Proveedores de Cuentas Streaming</option>
+                                            <option value="mayorista">Vendo Cuentas al por Mayor</option>
+                                            <option value="empresas">Cuentas para Empresas o Revendedores</option>
+                                        </optgroup>
+                                        <optgroup label="Búsqueda de Cuentas">
+                                            <option value="busco-streaming">Busco Cuentas de Streaming</option>
+                                            <option value="busco-ofertas">Solicito Cuentas Baratas o Promociones</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Título</label>
+                                    <input type="text" class="form-control" id="PostTitle" 
+                                        placeholder="Escribe un título descriptivo" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Contenido</label>
+                                <textarea class="form-control" id="PostContent" rows="4" 
+                                        placeholder="Describe tu consulta o información..." required></textarea>
+                            </div>
+
+                            <div class="contact-info border rounded p-3 mb-3">
+                                <div class="form-check mb-3">
+                                    <input type="checkbox" class="form-check-input" id="AllowContact">
+                                    <label class="form-check-label" for="AllowContact">
+                                        Incluir información de contacto (opcional)
+                                    </label>
+                                </div>
+                                
+                                <div id="contactFields" class="d-none">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="fab fa-whatsapp text-success"></i>
+                                                </span>
+                                                <input type="tel" class="form-control" id="contactWhatsapp" 
+                                                    placeholder="WhatsApp (9 dígitos)" pattern="[0-9]{9}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="fab fa-telegram text-info"></i>
+                                                </span>
+                                                <input type="text" class="form-control" id="contactTelegram" 
+                                                    placeholder="Usuario de Telegram">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="fab fa-instagram text-danger"></i>
+                                                </span>
+                                                <input type="text" class="form-control" id="contactInstagram" 
+                                                    placeholder="Usuario de Instagram">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="fab fa-facebook text-primary"></i>
+                                                </span>
+                                                <input type="text" class="form-control" id="contactFacebook" 
+                                                    placeholder="Usuario o URL de Facebook">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Publicar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main content -->
+            <div class="col-lg-8 col-xl-9">
+                <!-- Tabs container -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <ul class="nav nav-pills mb-4">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="allPosts-tab" data-bs-toggle="pill" href="#allPosts">
+                                    <i class="fas fa-globe me-2"></i>Publicaciones
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="myHistory-tab" data-bs-toggle="pill" href="#myHistory">
+                                    <i class="fas fa-history me-2"></i>Mi historial
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <!-- All posts tab -->
+                            <div class="tab-pane fade show active" id="allPosts">
+                                <!-- Search and filters -->
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <select class="form-select" id="categoryFilter">
+                                        <option value="">Todas las categorías</option>
+                                        <optgroup label="Venta de Cuentas">
+                                            <option value="streaming">Cuentas de Streaming</option>
+                                            <option value="ofertas">Cuentas Baratas/Promocionales</option>
+                                            <option value="premium">Cuentas Premium</option>
+                                        </optgroup>
+                                        <optgroup label="Proveedores de Cuentas">
+                                            <option value="proveedor-streaming">Proveedores de Cuentas Streaming</option>
+                                            <option value="mayorista">Vendo Cuentas al por Mayor</option>
+                                            <option value="empresas">Cuentas para Empresas o Revendedores</option>
+                                        </optgroup>
+                                        <optgroup label="Búsqueda de Cuentas">
+                                            <option value="busco-streaming">Busco Cuentas de Streaming</option>
+                                            <option value="busco-ofertas">Solicito Cuentas Baratas o Promociones</option>
+                                        </optgroup>
+                                    </select>
+                                    <select class="form-select" id="sortPosts">
+                                        <option value="newest">Más recientes</option>
+                                        <option value="oldest">Más antiguos</option>
+                                    </select>
+                                </div>
+
+                                <!-- Posts container -->
+                                <div class="posts-container mb-4">
+                                    <!-- Posts will be loaded here -->
+                                </div>
+
+                                <!-- Reemplazar la sección de paginación existente con esta versión simplificada -->
+                                <nav aria-label="Forum pagination" class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted small" id="totalPosts">
+                                        <!-- El contador se actualizará dinámicamente -->
+                                    </span>
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <!-- La paginación se generará dinámicamente -->
+                                    </ul>
+                                </nav>
+
+                            </div>
+
+                            <!-- History tab -->
+                            <div class="tab-pane fade" id="myHistory">
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <h5 class="card-title">Mi Historial</h5>
+                                            <!-- Mover los botones de filtro a un contenedor propio -->
+                                            <div class="filter-buttons mt-3">
+                                                <div class="btn-group w-100">
+                                                    <button class="btn btn-outline-primary active" data-filter="all">
+                                                        Todas
+                                                    </button>
+                                                    <button class="btn btn-outline-primary" data-filter="own">
+                                                        Mis publicaciones
+                                                    </button>
+                                                    <button class="btn btn-outline-primary" data-filter="replied">
+                                                        Comentadas
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Barra de búsqueda -->
+                                        <div class="input-group mb-4">
+                                            <input type="text" class="form-control" id="historySearch" 
+                                                placeholder="Buscar en mi historial...">
+                                            <button class="btn btn-outline-secondary" type="button">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+
+                                        <!-- Contenedor del historial -->
+                                        <div id="historyContainer">
+                                            <!-- El contenido se cargará dinámicamente -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reply Modal -->
+    <div class="modal fade" id="replyModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Responder</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="replyForm">
+                        <input type="hidden" id="replyPostId">
+                        <div class="mb-3">
+                            <textarea class="form-control" id="replyContent" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enviar Respuesta</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add floating action button before closing body tag -->
+    <button class="new-post-fab" data-bs-toggle="modal" data-bs-target="#newPostModal">
+        <i class="fas fa-plus"></i>
+        <span class="tooltip">Nueva Publicación</span>
+    </button>
+
+    <!-- Add new post modal -->
+    <div class="modal fade modal-new-post" id="newPostModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2"></i>Nueva Publicación
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Move the form here for mobile view -->
+                    <div id="mobileNewPostForm">
+                        <!-- Clone of the existing form but with new IDs -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzKjNf4uCGSq25seHWXdSjIAfDO5aYI_s",
+            authDomain: "tiempoventas-fd1eb.firebaseapp.com",
+            projectId: "tiempoventas-fd1eb",
+            storageBucket: "tiempoventas-fd1eb.firebasestorage.app",
+            messagingSenderId: "1052194374963",
+            appId: "1:1052194374963:web:54931d74c1889cb2002a46"
+        };
+        const app = initializeApp(firebaseConfig);
+        window.firebaseApp = app;
+    </script>
+    <script type="module" src="forum.js"></script>
+    <script>
+        document.getElementById('AllowContact').addEventListener('change', function() {
+            const contactFields = document.getElementById('contactFields');
+            contactFields.classList.toggle('d-none', !this.checked);
+            
+            if (!this.checked) {
+                // Limpiar campos cuando se deshabilita
+                ['contactWhatsapp', 'contactTelegram', 'contactInstagram', 'contactFacebook']
+                    .forEach(id => document.getElementById(id).value = '');
+            }
+        });
+    </script>
+</body>
+</html>

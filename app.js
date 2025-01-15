@@ -1281,7 +1281,7 @@ auth.onAuthStateChanged(async (user) => {
             document.getElementById('trashCount').textContent = '0';
         }
     } catch (error) {
-        console.error('Error during initialization:', error);
+        console.error('Error durante la inicialización:', error);
         showError('Error al cargar la aplicación');
     } finally {
         // Ocultar pantalla de carga con animación
@@ -1364,3 +1364,84 @@ Object.assign(window, {
     toggleStatus, // Agregar toggleStatus a la lista
     deleteSale
 });
+
+// Agregar después de la inicialización de la aplicación
+const shareButton = document.getElementById('shareButton');
+const shareModal = new bootstrap.Modal(document.getElementById('shareModal'));
+
+// Configuración para compartir
+const shareData = {
+    title: 'SellStream - Sistema de Gestión de Suscripciones',
+    text: '¡Descubre SellStream! La manera más fácil de gestionar y dar seguimiento a tus suscripciones.',
+    url: 'https://sellstream.trustzonestore.com'
+};
+
+// Handler para el botón de compartir
+shareButton.addEventListener('click', async () => {
+    // Si el navegador soporta Web Share API y está en un contexto seguro
+    if (navigator.share && window.isSecureContext) {
+        try {
+            await navigator.share(shareData);
+            showSuccess('¡Gracias por compartir!');
+        } catch (err) {
+            // Si el usuario cancela la acción, no mostrar error
+            if (err.name !== 'AbortError') {
+                shareModal.show();
+            }
+        }
+    } else {
+        // Fallback al modal de compartir
+        shareModal.show();
+    }
+});
+
+// Manejadores para los botones de redes sociales
+document.getElementById('shareWhatsApp').addEventListener('click', () => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`);
+});
+
+document.getElementById('shareFacebook').addEventListener('click', () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareData.url)}`);
+});
+
+document.getElementById('shareTwitter').addEventListener('click', () => {
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.text)}&url=${encodeURIComponent(shareData.url)}`);
+});
+
+document.getElementById('shareLinkedIn').addEventListener('click', () => {
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareData.url)}`);
+});
+
+// Manejar la copia del enlace
+document.getElementById('copyLinkBtn').addEventListener('click', async () => {
+    const shareLink = document.getElementById('shareLink');
+    
+    try {
+        await navigator.clipboard.writeText(shareLink.value);
+        showSuccess('¡Enlace copiado!');
+        
+        // Efecto visual en el botón
+        const btn = document.getElementById('copyLinkBtn');
+        btn.innerHTML = '<i class="fas fa-check me-2"></i>Copiado';
+        btn.classList.replace('btn-outline-primary', 'btn-success');
+        
+        setTimeout(() => {
+            btn.innerHTML = '<i class="fas fa-copy me-2"></i>Copiar';
+            btn.classList.replace('btn-success', 'btn-outline-primary');
+        }, 2000);
+    } catch (err) {
+        showError('Error al copiar el enlace');
+    }
+});
+
+// Reemplazar el handler del botón de tutoriales
+tutorialsButton.addEventListener('click', () => {
+    window.location.href = 'tutorials.html';
+});
+
+// Agregar handler del botón del foro
+document.getElementById('forumButton').addEventListener('click', () => {
+    window.location.href = 'forum.html';
+});
+
+// Eliminar el código del modal de tutoriales que ya no se usará

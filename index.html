@@ -100,25 +100,36 @@
         <!-- Dashboard Container -->
         <div id="dashboardContainer" style="display: none;">
             <nav class="navbar navbar-dark mb-4">
-                <div class="container d-flex justify-content-between align-items-center">
+                <div class="container">
                     <span class="navbar-brand fw-bold">
                         <img src="SellStream.png" alt="SellStream Logo" height="30" class="me-2">
                         Panel de Control
                     </span>
-                    <div class="d-flex align-items-center">
-                        <button class="btn btn-light me-3" data-bs-toggle="modal" data-bs-target="#trashModal">
+                    <div class="btn-container">
+                        <button class="btn btn-light me-2" id="shareButton">
+                            <i class="fas fa-share-alt me-2"></i>Compartir
+                        </button>
+                        <button class="btn btn-light me-2" id="tutorialsButton">
+                            <i class="fas fa-play-circle me-2"></i>Tutoriales
+                        </button>
+                        <button class="btn btn-light me-2" id="forumButton">
+                            <i class="fas fa-comments me-2"></i>Foro
+                        </button>
+                        <button class="btn btn-light me-2" data-bs-toggle="modal" data-bs-target="#trashModal">
                             <i class="fas fa-trash me-2"></i>Papelera
                             <span id="trashCount" class="badge bg-danger ms-1">0</span>
                         </button>
-                        <div class="text-white me-4" id="currentTime">
-                            <i class="fas fa-clock me-2"></i>
-                        </div>
-                        <div class="text-white me-4" id="totalSales">
-                            <i class="fas fa-dollar-sign me-2"></i>Total: $0 CLP
-                        </div>
                         <button id="logoutBtn" class="btn btn-light">
                             <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                         </button>
+                    </div>
+                    <div class="info-container">
+                        <div class="text-white me-4" id="currentTime">
+                            <i class="fas fa-clock me-2"></i>
+                        </div>
+                        <div class="text-white" id="totalSales">
+                            <i class="fas fa-dollar-sign me-2"></i>Total: $0 CLP
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -171,9 +182,10 @@
                     </div>
                 </div>
 
+                <!-- Reemplazar la sección de filtros existente con esta -->
                 <div class="row mb-4">
                     <div class="col-12">
-                        <div class="d-flex gap-2 align-items-center">
+                        <div class="d-flex gap-2 align-items-center filter-container">
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#saleModal">
                                 <i class="fas fa-plus me-2"></i>Nueva Suscripción
                             </button>
@@ -184,7 +196,6 @@
                                 <ul class="dropdown-menu" id="filtersList">
                                     <li><a class="dropdown-item" href="#" onclick="clearFilters()">Mostrar todo</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <!-- Los filtros personalizados se agregarán aquí -->
                                 </ul>
                             </div>
                             <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
@@ -525,6 +536,46 @@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Guardar Filtro</button>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agregar modal de compartir -->
+    <div class="modal fade" id="shareModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-share-alt me-2"></i>Compartir SellStream
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted">Invita a otros a usar SellStream para gestionar sus suscripciones:</p>
+                    
+                    <div class="input-group mb-3">
+                        <input type="text" id="shareLink" class="form-control" 
+                               value="https://sellstream.trustzonestore.com" readonly>
+                        <button class="btn btn-outline-primary" id="copyLinkBtn">
+                            <i class="fas fa-copy me-2"></i>Copiar
+                        </button>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <button class="btn btn-lg btn-outline-success" id="shareWhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </button>
+                        <button class="btn btn-lg btn-outline-primary" id="shareFacebook">
+                            <i class="fab fa-facebook"></i>
+                        </button>
+                        <button class="btn btn-lg btn-outline-info" id="shareTwitter">
+                            <i class="fab fa-twitter"></i>
+                        </button>
+                        <button class="btn btn-lg btn-outline-primary" id="shareLinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
