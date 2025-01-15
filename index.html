@@ -586,13 +586,14 @@
 
     <!-- Buscar el modal de verificación existente y reemplazarlo con este: -->
 
-    <div class="modal fade" id="verificationModal" data-bs-backdrop="static">
+    <div class="modal fade" id="verificationModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-shield-alt me-2"></i>Verificar Cuenta
                     </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="text-center mb-4">
@@ -600,6 +601,8 @@
                         <h4>Verificación de Cuenta</h4>
                         <p class="text-muted">
                             Ingresa el código de verificación para acceder a todas las funcionalidades.
+                            <br>
+                            <small>Puedes verificar tu cuenta más tarde si lo deseas.</small>
                         </p>
                     </div>
                     <form id="verificationForm">
@@ -612,9 +615,14 @@
                                    autocomplete="off"
                                    required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-check-circle me-2"></i>Verificar Cuenta
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-secondary flex-grow-1" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-2"></i>Más tarde
+                            </button>
+                            <button type="submit" class="btn btn-primary flex-grow-1">
+                                <i class="fas fa-check-circle me-2"></i>Verificar Cuenta
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
